@@ -1,5 +1,8 @@
-//! SigmaOS pacman
-//! pacman component
+// SPDX-License-Identifier: Apache-2.0
+//! SigmaOS-pacman - Arch Linux-inspired package manager
+//! Part of SigmaOS multi-repository architecture
+
+#![no_std]
 
 pub mod pacman;
 
