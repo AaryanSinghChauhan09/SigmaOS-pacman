@@ -4,6 +4,8 @@
 
 #![no_std]
 
+extern crate alloc;
+use alloc::vec::Vec;
 use core::result::Result;
 
 /// Package management errors
@@ -95,7 +97,7 @@ mod tests {
 
     #[test]
     fn test_pacman_creation() {
-        let pacman = Pacman::new();
+        let mut pacman = Pacman::new();
         assert!(pacman.sync().is_ok());
     }
 }
