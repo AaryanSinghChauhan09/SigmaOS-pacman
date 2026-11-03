@@ -1,10 +1,39 @@
-// SPDX-License-Identifier: Apache-2.0
-//! SigmaOS-pacman - Arch Linux-inspired package manager
-//! Part of SigmaOS multi-repository architecture
+//! SigmaOS-pacman - SigmaOS Component
+//!
+//! Development and system tools for SigmaOS.
 
-#![no_std]
+use anyhow::Result;
+use log::info;
+use serde::{Deserialize, Serialize};
 
-#[path = "pacman.rs"]
-pub mod pacman;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Config {
+    pub enabled: bool,
+    pub auto_start: bool,
+}
 
-pub use pacman::Pacman;
+impl Default for Config {
+    fn default() -> Self {
+        Self { enabled: true, auto_start: true }
+    }
+}
+
+pub struct pacman {
+    config: Config,
+}
+
+impl pacman {
+    pub fn new(config: Config) -> Self {
+        Self { config }
+    }
+
+    pub fn initialize(&mut self) -> Result<()> {
+        info!("Initializing SigmaOS-pacman");
+        Ok(())
+    }
+
+    pub fn run(&mut self) -> Result<()> {
+        info!("Running SigmaOS-pacman");
+        Ok(())
+    }
+}
