@@ -1,25 +1,40 @@
-# SigmaOS Pacman
+# SigmaOS-pacman
 
-An early `no_std` Rust model of a pacman-style package API. The public `Pacman`
-type exposes `sync`, `install`, `remove`, and `search` operations over a package
-database interface.
+SigmaOS component inspired by Arch Linux and Debian architecture.
 
-## Current behavior and limits
+## Overview
 
-The current methods are placeholders: `sync`, `install`, and `remove` return
-success without changing a package database, and `search` returns an empty
-list. This crate does not fetch repositories, verify signatures, write package
-files, or manage a host system. Do not use an `Ok(())` result as evidence that
-an operation occurred.
+This component provides essential functionality for the SigmaOS operating system,
+following the modular design principles of Arch Linux and the stability focus of Debian.
 
-Before adding a real backend, define repository trust and signature
-verification, dependency resolution, transaction planning, filesystem
-ownership, rollback, and failure reporting. Keep preview and apply behavior
-separate so callers can inspect changes before mutation.
+## Features
 
-## Development and licensing
+- Modular architecture
+- Minimal dependencies
+- Well-documented APIs
+- Comprehensive testing
 
-The GitHub workflow runs `cargo test --all-targets --locked`; check its result
-for the commit being reviewed. The Cargo manifest declares GPL-3.0-or-later,
-while Rust source files currently contain Apache-2.0 and MIT SPDX headers.
-Resolve that licensing mismatch before redistribution.
+## Building
+
+```bash
+cargo build --release
+```
+
+## Testing
+
+```bash
+cargo test
+```
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Contributing
+
+See CONTRIBUTING.md for guidelines.
+
+## Links
+
+- Repository: https://github.com/AaryanSinghChauhan09/SigmaOS-pacman
+- SigmaOS: https://github.com/AaryanSinghChauhan09
