@@ -1,39 +1,18 @@
-//! SigmaOS-pacman - SigmaOS Component
+//! SigmaOS-pacman — Arch Linux-inspired package manager library.
 //!
-//! Development and system tools for SigmaOS.
+//! Modules:
+//! - [`pacman`]: core package database, dependency resolution, transactions
+//! - [`package`]: package/repository model
+//! - [`cache`]: package cache with TTL
+//! - [`installer`]: install/uninstall engine
+//! - [`config`]/[`error`]/[`service`]: component plumbing shared with the CLI
 
-use anyhow::Result;
-use log::info;
-use serde::{Deserialize, Serialize};
+pub mod cache;
+pub mod config;
+pub mod error;
+pub mod installer;
+pub mod package;
+pub mod pacman;
+pub mod service;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Config {
-    pub enabled: bool,
-    pub auto_start: bool,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self { enabled: true, auto_start: true }
-    }
-}
-
-pub struct pacman {
-    config: Config,
-}
-
-impl pacman {
-    pub fn new(config: Config) -> Self {
-        Self { config }
-    }
-
-    pub fn initialize(&mut self) -> Result<()> {
-        info!("Initializing SigmaOS-pacman");
-        Ok(())
-    }
-
-    pub fn run(&mut self) -> Result<()> {
-        info!("Running SigmaOS-pacman");
-        Ok(())
-    }
-}
+pub use error::{ComponentError, Result};

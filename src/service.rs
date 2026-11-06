@@ -21,7 +21,7 @@ impl Service {
             return Err(crate::error::ComponentError::RuntimeError("Service already running".to_string()).into());
         }
         info!("Starting service");
-        self.config.process()?;
+        self.config.process().map_err(|e| crate::error::ComponentError::RuntimeError(e.to_string()))?;
         self.running = true;
         Ok(())
     }
