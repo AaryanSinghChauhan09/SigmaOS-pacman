@@ -454,7 +454,7 @@ impl PacmanPackageManager {
         }
 
         for package_name in updates {
-            if let Ok(_) = self.update(&package_name) {
+            if self.update(&package_name).is_ok() {
                 upgraded.push(package_name);
             }
         }
@@ -690,13 +690,17 @@ mod tests {
         db.add_mirror("https://mirror2.example.com".to_string());
 
         assert_eq!(db.get_mirrors().len(), 2);
-        assert!(db.get_mirrors().contains(&"https://mirror1.example.com".to_string()));
+        assert!(db
+            .get_mirrors()
+            .contains(&"https://mirror1.example.com".to_string()));
     }
 
     #[test]
     fn test_pacman_sync() {
         let mut manager = PacmanPackageManager::new();
-        manager.database.add_mirror("https://mirror.example.com".to_string());
+        manager
+            .database
+            .add_mirror("https://mirror.example.com".to_string());
 
         assert!(manager.sync().is_ok());
         assert!(manager.database.get_last_sync_time().is_some());

@@ -1,6 +1,6 @@
 use crate::config::Config;
 use crate::error::Result;
-use log::{info, error};
+use log::{error, info};
 
 pub struct Service {
     config: Config,
@@ -18,10 +18,14 @@ impl Service {
     pub fn start(&mut self) -> Result<()> {
         if self.running {
             error!("Service already running");
-            return Err(crate::error::ComponentError::RuntimeError("Service already running".to_string()).into());
+            return Err(crate::error::ComponentError::RuntimeError(
+                "Service already running".to_string(),
+            ));
         }
         info!("Starting service");
-        self.config.process().map_err(|e| crate::error::ComponentError::RuntimeError(e.to_string()))?;
+        self.config
+            .process()
+            .map_err(|e| crate::error::ComponentError::RuntimeError(e.to_string()))?;
         self.running = true;
         Ok(())
     }
@@ -29,7 +33,9 @@ impl Service {
     pub fn stop(&mut self) -> Result<()> {
         if !self.running {
             error!("Service not running");
-            return Err(crate::error::ComponentError::RuntimeError("Service not running".to_string()).into());
+            return Err(crate::error::ComponentError::RuntimeError(
+                "Service not running".to_string(),
+            ));
         }
         info!("Stopping service");
         self.running = false;

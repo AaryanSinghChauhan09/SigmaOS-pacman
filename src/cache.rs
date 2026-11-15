@@ -20,9 +20,9 @@ impl CacheEntry {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
-        
+
         let expires = ttl_seconds.map(|ttl| now + ttl);
-        
+
         CacheEntry {
             path,
             size,
@@ -67,11 +67,19 @@ impl PackageCache {
         }
     }
 
+    pub fn len(&self) -> usize {
+        self.entries.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
     pub fn add(&mut self, key: String, entry: CacheEntry) -> Result<(), &'static str> {
         if self.current_size + entry.size > self.max_size {
             self.evict(entry.size)?;
         }
-        
+
         self.current_size += entry.size;
         self.entries.insert(key, entry);
         Ok(())
@@ -102,7 +110,7 @@ impl PackageCache {
             .iter()
             .map(|(k, e)| (k.clone(), e.accessed, e.size))
             .collect();
-        entries.sort_by(|a, b| a.1.cmp(&b.1));
+        entries.sort_by_key(|a| a.1);
 
         let mut freed = 0u64;
         for (key, _, size) in entries {
@@ -112,21 +120,22 @@ impl PackageCache {
             self.remove(&key);
             freed += size;
         }
-        
+
         if freed < required {
             return Err("Cannot free enough space in cache");
         }
-        
+
         Ok(())
     }
 
     pub fn cleanup_expired(&mut self) {
-        let expired: Vec<String> = self.entries
+        let expired: Vec<String> = self
+            .entries
             .iter()
             .filter(|(_, entry)| entry.is_expired())
             .map(|(key, _)| key.clone())
             .collect();
-        
+
         for key in expired {
             self.remove(&key);
         }

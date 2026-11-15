@@ -1,7 +1,6 @@
 //! Package installation with transaction support
 //! Follows: Transaction Safety, Atomic Operations, Rollback
 
-use std::fs;
 use std::path::PathBuf;
 
 /// Installation transaction
@@ -12,7 +11,7 @@ pub struct InstallTransaction {
 }
 
 #[derive(Debug, Clone)]
-enum InstallStep {
+pub enum InstallStep {
     Download(String),
     Extract(PathBuf),
     Configure(PathBuf),
@@ -85,14 +84,16 @@ impl PackageInstaller {
 
     pub fn create_transaction(&self, package_name: String) -> InstallTransaction {
         let mut transaction = InstallTransaction::new(package_name);
-        
+
         // Add standard installation steps
-        transaction.add_step(InstallStep::Download("https://example.com/package.tar.gz".to_string()));
+        transaction.add_step(InstallStep::Download(
+            "https://example.com/package.tar.gz".to_string(),
+        ));
         transaction.add_step(InstallStep::Extract(self.install_path.clone()));
         transaction.add_step(InstallStep::Configure(self.install_path.clone()));
         transaction.add_step(InstallStep::Build(self.install_path.clone()));
         transaction.add_step(InstallStep::Install(self.install_path.clone()));
-        
+
         transaction
     }
 
@@ -116,7 +117,7 @@ mod tests {
     #[test]
     fn test_transaction_creation() {
         let installer = PackageInstaller::default();
-        let mut transaction = installer.create_transaction("test-pkg".to_string());
+        let transaction = installer.create_transaction("test-pkg".to_string());
         assert_eq!(transaction.steps.len(), 5);
     }
 }

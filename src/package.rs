@@ -13,7 +13,11 @@ pub struct Version {
 
 impl Version {
     pub fn new(major: u32, minor: u32, patch: u32) -> Self {
-        Version { major, minor, patch }
+        Version {
+            major,
+            minor,
+            patch,
+        }
     }
 
     pub fn parse(version_str: &str) -> Result<Self, &'static str> {
@@ -80,7 +84,8 @@ impl PackageRepository {
     }
 
     pub fn search(&self, query: &str) -> Vec<&Package> {
-        self.packages.values()
+        self.packages
+            .values()
             .filter(|p| p.name.contains(query) || p.description.contains(query))
             .collect()
     }
@@ -120,7 +125,9 @@ impl DependencyResolver {
         }
         visited.insert(package_name.to_string());
 
-        let package = self.repository.get_package(package_name)
+        let package = self
+            .repository
+            .get_package(package_name)
             .ok_or("Package not found")?;
 
         for dep in &package.dependencies {
@@ -153,15 +160,23 @@ mod tests {
     #[test]
     fn test_dependency_resolution() {
         let mut repo = PackageRepository::new();
-        
-        let mut pkg_a = Package::new("pkg-a".to_string(), Version::new(1, 0, 0), "Package A".to_string());
+
+        let mut pkg_a = Package::new(
+            "pkg-a".to_string(),
+            Version::new(1, 0, 0),
+            "Package A".to_string(),
+        );
         pkg_a.add_dependency("pkg-b".to_string());
-        
-        let pkg_b = Package::new("pkg-b".to_string(), Version::new(1, 0, 0), "Package B".to_string());
-        
+
+        let pkg_b = Package::new(
+            "pkg-b".to_string(),
+            Version::new(1, 0, 0),
+            "Package B".to_string(),
+        );
+
         repo.add_package(pkg_a);
         repo.add_package(pkg_b);
-        
+
         let resolver = DependencyResolver::new(repo);
         let deps = resolver.resolve_dependencies("pkg-a").unwrap();
         assert!(deps.contains(&"pkg-b".to_string()));

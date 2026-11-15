@@ -1,5 +1,6 @@
 use thiserror::Error;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Error, Debug)]
 pub enum ComponentError {
     #[error("Configuration error: {0}")]
