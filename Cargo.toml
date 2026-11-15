@@ -1,17 +1,32 @@
 [package]
-name = "sigmaos-package-component"
+name = "sigmaos_pacman"
 version = "0.1.0"
 edition = "2021"
 authors = ["SigmaOS Team"]
-license = "MIT OR Apache-2.0"
-description = "SigmaOS package management component with sophisticated implementation"
+description = "Package manager implementation for SigmaOS inspired by Arch Linux pacman"
+license = "MIT OR GPL-2.0"
+repository = "https://github.com/AaryanSinghChauhan09/SigmaOS-pacman"
+readme = "README.md"
+keywords = ["pacman", "package", "manager", "arch", "linux"]
+categories = ["os", "package-management"]
 
 [dependencies]
 anyhow = "1.0"
 thiserror = "1.0"
-log = "0.4"
-env_logger = "0.10"
 serde = { version = "1.0", features = ["derive"] }
-toml = "0.8"
+parking_lot = "0.12"
+bitflags = "2.0"
 
 [dev-dependencies]
+tempfile = "3.0"
+
+[profile.dev]
+opt-level = 0
+debug = false
+incremental = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

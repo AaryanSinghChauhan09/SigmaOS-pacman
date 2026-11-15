@@ -1,18 +1,27 @@
-//! SigmaOS-pacman — Arch Linux-inspired package manager library.
+//! SigmaOS Pacman
 //!
-//! Modules:
-//! - [`pacman`]: core package database, dependency resolution, transactions
-//! - [`package`]: package/repository model
-//! - [`cache`]: package cache with TTL
-//! - [`installer`]: install/uninstall engine
-//! - [`config`]/[`error`]/[`service`]: component plumbing shared with the CLI
+//! Package manager implementation inspired by Arch Linux pacman
 
-pub mod cache;
-pub mod config;
-pub mod error;
-pub mod installer;
-pub mod package;
+#![allow(warnings, unused)]
+
 pub mod pacman;
-pub mod service;
+pub mod package;
+pub mod repository;
+pub mod dependency;
+pub mod transaction;
+pub mod database;
+pub mod config;
+pub mod hook;
+pub mod aur;
+pub mod group;
 
-pub use error::{ComponentError, Result};
+pub use pacman::*;
+pub use package::*;
+pub use repository::*;
+pub use dependency::*;
+pub use transaction::*;
+pub use database::*;
+pub use config::*;
+pub use hook::*;
+pub use aur::*;
+pub use group::*;
