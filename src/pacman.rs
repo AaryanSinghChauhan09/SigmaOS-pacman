@@ -123,14 +123,14 @@ impl Pacman {
     
     /// Install package group
     pub fn install_group(&mut self, group_name: &str) -> Result<()> {
-        if let Some(group) = self.groups.get(group_name) {
-            for package_name in &group.packages {
-                self.install_with_deps(package_name)?;
-            }
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Group not found: {}", group_name))
+        let package_names: Vec<String> = match self.groups.get(group_name) {
+            Some(group) => group.packages.clone(),
+            None => return Err(anyhow::anyhow!("Group not found: {}", group_name)),
+        };
+        for package_name in &package_names {
+            self.install_with_deps(package_name)?;
         }
+        Ok(())
     }
     
     /// Remove package
@@ -172,14 +172,14 @@ impl Pacman {
     
     /// Remove package group
     pub fn remove_group(&mut self, group_name: &str) -> Result<()> {
-        if let Some(group) = self.groups.get(group_name) {
-            for package_name in &group.packages {
-                self.remove_with_deps(package_name)?;
-            }
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Group not found: {}", group_name))
+        let package_names: Vec<String> = match self.groups.get(group_name) {
+            Some(group) => group.packages.clone(),
+            None => return Err(anyhow::anyhow!("Group not found: {}", group_name)),
+        };
+        for package_name in &package_names {
+            self.remove_with_deps(package_name)?;
         }
+        Ok(())
     }
     
     /// Update all packages
@@ -333,7 +333,7 @@ impl Pacman {
     fn find_package(&self, package_name: &str) -> Result<Package> {
         // Search in repositories
         for repo in self.repositories.values() {
-            if let Some(package) = repo.get_package(package_name)? {
+            if let Some(package) = repo.get_package(package_name) {
                 return Ok(package.clone());
             }
         }
@@ -460,4 +460,39 @@ pub struct FileEntry {
     pub path: PathBuf,
     pub size: u64,
     pub mode: u32,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::package::Package;
+    use crate::repository::Repository;
+
+    #[test]
+    fn pacman_new_initializes_empty_state() {
+        let pacman = Pacman::new().expect("pacman should initialize");
+        assert!(!pacman.initialized);
+        assert!(pacman.repositories.is_empty());
+        assert!(pacman.groups.is_empty());
+    }
+
+    #[test]
+    fn package_registers_and_retrieves_by_name() {
+        let mut repo = Repository::new("core", "file:///repo").expect("repo");
+        let pkg = Package::new("linux", "6.1.0");
+        repo.add_package(pkg);
+        assert!(repo.get_package("linux").is_some());
+        assert!(repo.get_package("missing").is_none());
+    }
+
+    #[test]
+    fn find_package_searches_registered_repositories() {
+        let mut pacman = Pacman::new().expect("pacman");
+        let mut repo = Repository::new("extra", "file:///extra").expect("repo");
+        repo.add_package(Package::new("bash", "5.2"));
+        pacman.repositories.insert("extra".to_string(), repo);
+        let found = pacman.find_package("bash").expect("bash should be found");
+        assert_eq!(found.name, "bash");
+        assert!(pacman.find_package("nonexistent").is_err());
+    }
 }
