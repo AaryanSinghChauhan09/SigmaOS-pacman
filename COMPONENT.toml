@@ -3,12 +3,12 @@ name = "SigmaOS-pacman"
 tier = 2
 stability = "scaffold"
 language = "rust"
-description = "pacman component"
+description = "Pacman compatible package tooling with makepkg source checksums and Arch PKGBUILD name/version/release validation"
 upstream = []
 
 [contract]
 provides = ["component"]
-depends_on = []
+depends_on = ["SigmaOS-system"]
 
 [maturity]
 status = "Scaffold"
