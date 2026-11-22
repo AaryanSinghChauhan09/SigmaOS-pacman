@@ -346,16 +346,47 @@ impl Pacman {
         Err(anyhow::anyhow!("Package not found: {}", package_name))
     }
     
-    /// Resolve dependencies
+    /// Resolve dependencies using the ALPM-style solver: version
+    /// constraints are checked via `vercmp`, and unsatisfied specs fall
+    /// back to `provides` entries before giving up.
     fn resolve_dependencies(&self, package: &Package) -> Result<Vec<Package>> {
         let mut deps = Vec::new();
-        
-        for dep_name in &package.depends {
-            if let Ok(dep) = self.find_package(dep_name) {
-                deps.push(dep);
+        let mut seen = std::collections::HashSet::new();
+
+        for dep_str in &package.depends {
+            let spec = crate::solver::parse_spec(dep_str);
+            let mut resolved: Option<Package> = None;
+
+            // 1. Direct name match + version constraint.
+            if let Ok(dep) = self.find_package(&spec.name) {
+                if crate::solver::satisfies(&spec, &dep.version) {
+                    resolved = Some(dep);
+                }
+            }
+
+            // 2. Provides fallback: dep name may be a virtual provide.
+            if resolved.is_none() {
+                for inst in self.database.list_installed().unwrap_or_default() {
+                    for prov in &inst.provides {
+                        let ps = crate::solver::parse_spec(prov);
+                        if ps.name == spec.name
+                            && crate::solver::satisfies(&spec, ps.version.as_deref().unwrap_or(&inst.version))
+                        {
+                            resolved = Some(inst.clone());
+                            break;
+                        }
+                    }
+                    if resolved.is_some() { break; }
+                }
+            }
+
+            if let Some(dep) = resolved {
+                if seen.insert(dep.name.clone()) {
+                    deps.push(dep);
+                }
             }
         }
-        
+
         Ok(deps)
     }
     
