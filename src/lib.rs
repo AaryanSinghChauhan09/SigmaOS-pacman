@@ -7,6 +7,7 @@
 pub mod pacman;
 pub mod package;
 pub mod repository;
+pub mod solver;
 pub mod dependency;
 pub mod transaction;
 pub mod database;
